@@ -1,11 +1,11 @@
 const STORAGE_KEY = "mouth-tracker";
 const DEFAULT_ELO = 1000;
 const CUP_LAYOUT = [1, 4, 3, 2, 1];
-const SUPABASE_URL = "PASTE_SUPABASE_URL_HERE";
-const SUPABASE_KEY = "PASTE_SUPABASE_ANON_KEY_HERE";
+const SUPABASE_URL = "https://bpzusrjjgkbazzhhvxot.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwenVzcmpqZ2tiYXp6aGh2eG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzNzQ3NzAsImV4cCI6MjA4NDk1MDc3MH0.QWSoHrpaa6L80iUwwyn42iSY8u_g--nNOoFbSifAHxQ";
 const REMOTE_ENABLED =
-  SUPABASE_URL !== "PASTE_SUPABASE_URL_HERE" &&
-  SUPABASE_KEY !== "PASTE_SUPABASE_ANON_KEY_HERE";
+  SUPABASE_URL !== "https://bpzusrjjgkbazzhhvxot.supabase.co" &&
+  SUPABASE_KEY !== "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwenVzcmpqZ2tiYXp6aGh2eG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzNzQ3NzAsImV4cCI6MjA4NDk1MDc3MH0.QWSoHrpaa6L80iUwwyn42iSY8u_g--nNOoFbSifAHxQ";
 
 const screens = Array.from(document.querySelectorAll(".screen"));
 const navButtons = document.querySelectorAll(".nav-btn");
