@@ -268,7 +268,7 @@ function computeScore(inputs, population) {
     B16 <= 0 ||
     B17 <= 0
   ) {
-    return "";
+    return null;
   }
   const B15 = 0.9;
   const B18 = Math.atanh(B15) / B16;
@@ -279,7 +279,7 @@ function computeScore(inputs, population) {
     33.33 * Math.tanh(B19 * (I / C)) -
     16.66 * Math.tanh(1.2 * (K / C));
   if (!Number.isFinite(score)) {
-    return "";
+    return null;
   }
   return score;
 }
@@ -508,11 +508,12 @@ function renderPlayerActions() {
     const container = document.createElement("div");
     container.className = "player-card";
     container.innerHTML = `
-      <h4>${player.name}${dprScore === "" ? "" : ` · DPR ${dprScore.toFixed(2)}`}</h4>
+      <h4>${player.name} · DPR ${dprScore === null ? "N/A" : dprScore.toFixed(2)}</h4>
       <div class="stat-line">Cups: ${stats.cups.toFixed(1)}</div>
       <div class="stat-line">Saves: ${stats.saves}</div>
       <div class="stat-line">Aces: ${stats.aces}</div>
       <div class="stat-line">Mental Errors: ${stats.mentalErrors || 0}</div>
+      ${dprScore === null ? `<div class="stat-line">DPR pending (needs more games)</div>` : ""}
       <div class="actions player-actions">
         <div>
           <button data-action="save">+Save</button>
@@ -798,7 +799,7 @@ function renderStats() {
       <div class="stat-line">Games: ${player.stats.games} · Wins: ${player.stats.wins}</div>
       <div class="stat-line">Cups/Game: ${cupsPerGame} · Saves/Game: ${savesPerGame} · Aces/Game: ${acesPerGame}</div>
       <div class="stat-line">Mental Errors/Game: ${errorsPerGame}</div>
-      ${score === "" ? "" : `<div class="stat-line">DPR: ${score.toFixed(2)}</div>`}
+      <div class="stat-line">DPR: ${score === null ? "N/A (needs more games)" : score.toFixed(2)}</div>
       <div class="stat-line">Left Win%: ${leftWinRate} · Right Win%: ${rightWinRate}</div>
     `;
     playerList.appendChild(card);
