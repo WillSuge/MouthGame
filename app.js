@@ -239,6 +239,21 @@ function getPercentile(values, percentile) {
   return sorted[lower] * (1 - weight) + sorted[upper] * weight;
 }
 
+function getPopulationPercentiles() {
+  const cupsPerGameValues = state.players
+    .filter((player) => player.stats.games > 0)
+    .map((player) => player.stats.cups / player.stats.games)
+    .filter((value) => Number.isFinite(value));
+  const savesPerGameValues = state.players
+    .filter((player) => player.stats.games > 0)
+    .map((player) => player.stats.saves / player.stats.games)
+    .filter((value) => Number.isFinite(value));
+  return {
+    B16: getPercentile(cupsPerGameValues, 0.9),
+    B17: getPercentile(savesPerGameValues, 0.9),
+  };
+}
+
 function computeScore(inputs, population) {
   const { L, I, C, K } = inputs;
   const { B16, B17 } = population;
@@ -470,6 +485,7 @@ function renderPlayerActions() {
     return;
   }
   playerActions.innerHTML = "";
+  const population = getPopulationPercentiles();
   const players = Object.values(currentGame.teams)
     .flatMap((team) => [team.leftId, team.rightId])
     .map((id) => getPlayerById(id))
@@ -477,10 +493,22 @@ function renderPlayerActions() {
 
   players.forEach((player) => {
     const stats = currentGame.playerStats[player.id];
+    const totalCups = player.stats.cups + stats.cups;
+    const totalGames = player.stats.games + 1;
+    const totalMentalErrors = (player.stats.mentalErrors || 0) + stats.mentalErrors;
+    const dprScore = computeScore(
+      {
+        L: totalGames ? totalCups / totalGames : NaN,
+        I: totalCups,
+        C: totalGames,
+        K: totalMentalErrors,
+      },
+      population
+    );
     const container = document.createElement("div");
     container.className = "player-card";
     container.innerHTML = `
-      <h4>${player.name}</h4>
+      <h4>${player.name}${dprScore === "" ? "" : ` · DPR ${dprScore.toFixed(2)}`}</h4>
       <div class="stat-line">Cups: ${stats.cups.toFixed(1)}</div>
       <div class="stat-line">Saves: ${stats.saves}</div>
       <div class="stat-line">Aces: ${stats.aces}</div>
@@ -735,18 +763,7 @@ function updateTeamPlayers(playerIds, result, expected, baseK) {
 function renderStats() {
   renderPlayerOptions();
   playerList.innerHTML = "";
-  const cupsPerGameValues = state.players
-    .filter((player) => player.stats.games > 0)
-    .map((player) => player.stats.cups / player.stats.games)
-    .filter((value) => Number.isFinite(value));
-  const savesPerGameValues = state.players
-    .filter((player) => player.stats.games > 0)
-    .map((player) => player.stats.saves / player.stats.games)
-    .filter((value) => Number.isFinite(value));
-  const population = {
-    B16: getPercentile(cupsPerGameValues, 0.9),
-    B17: getPercentile(savesPerGameValues, 0.9),
-  };
+  const population = getPopulationPercentiles();
   state.players.forEach((player) => {
     const leftGames = player.stats.left.games || 0;
     const rightGames = player.stats.right.games || 0;
@@ -781,7 +798,7 @@ function renderStats() {
       <div class="stat-line">Games: ${player.stats.games} · Wins: ${player.stats.wins}</div>
       <div class="stat-line">Cups/Game: ${cupsPerGame} · Saves/Game: ${savesPerGame} · Aces/Game: ${acesPerGame}</div>
       <div class="stat-line">Mental Errors/Game: ${errorsPerGame}</div>
-      ${score === "" ? "" : `<div class="stat-line">Score: ${score.toFixed(2)}</div>`}
+      ${score === "" ? "" : `<div class="stat-line">DPR: ${score.toFixed(2)}</div>`}
       <div class="stat-line">Left Win%: ${leftWinRate} · Right Win%: ${rightWinRate}</div>
     `;
     playerList.appendChild(card);
